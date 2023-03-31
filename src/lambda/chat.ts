@@ -18,8 +18,7 @@ export async function chat(
     service = bindings.get(ChatService);
 
     if (event.events[0].type === 'message')
-      if (event.events[0].message.type === 'text')
-        await service.receiveTextMessage(event.events[0]);
+      await service.receiveTextMessage(event.events[0]);
   } catch (e) {
     console.error(e);
   }

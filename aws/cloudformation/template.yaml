@@ -109,3 +109,17 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
+  ####################################
+  ##### S3 Bucket and its policy #####
+  ####################################
+  S3BucketStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${Project}-${TargetEnvr}
+      LifecycleConfiguration:
+        Rules:
+        - Id: cleanup
+          Status: Enabled
+          ExpirationInDays: 3
+          NoncurrentVersionExpiration:
+            NoncurrentDays: 1
