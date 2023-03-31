@@ -120,6 +120,6 @@ Resources:
         Rules:
         - Id: cleanup
           Status: Enabled
-          ExpirationInDays: 3
+          ExpirationInDays: 1
           NoncurrentVersionExpiration:
             NoncurrentDays: 1
