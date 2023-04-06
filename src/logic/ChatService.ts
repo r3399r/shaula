@@ -18,80 +18,103 @@ export class ChatService {
   private readonly s3!: S3;
 
   public async receiveTextMessage(event: MessageEvent) {
+    const tokenDiscord = String(process.env.TOKEN_DISCORD);
+    const tokenTelegram = String(process.env.TOKEN_TELEGRAM);
+
+    const srcLineGroupId = String(process.env.SRC_LINE_GROUP_ID);
+    const srcLineUserId = String(process.env.SRC_LINE_USER_ID);
+
+    const dstLineGroupId = String(process.env.DST_LINE_GROUP_ID);
+    const dstDiscordChannelId = String(process.env.DST_DISCORD_CHANNEL_ID);
+    const dstTelegramChatId = String(process.env.DST_TELEGRAM_CHAT_ID);
+
     if (
-      event.source.type === 'group' &&
-      event.source.groupId === 'C714e154a8d1b6a00ce2389a9f41dae38'
+      event.source.userId !== srcLineUserId ||
+      event.source.type !== 'group' ||
+      event.source.groupId !== srcLineGroupId
     )
-      if (event.message.type === 'text') {
-        // line
-        await this.client.pushMessage('Ccca6c0d6ed49e51eb3cb6e52a04ef6ea', [
+      return;
+
+    if (event.message.type === 'text') {
+      // line
+      for (const lineGroupId of dstLineGroupId.split(','))
+        await this.client.pushMessage(lineGroupId, [
           {
             type: 'text',
             text: event.message.text,
           },
         ]);
 
-        // discord
+      // discord
+      for (const discordChannelId of dstDiscordChannelId.split(','))
         await axios.request({
           method: 'post',
-          url: 'https://discord.com/api/webhooks/1091170560001716314/5kU6C4_y2gmIVKA32dt6X31wb1H8CglcxG8u3ekGrC0fIu1fGkupX5E3YNsEJvC4W7AX',
-          headers: { 'Content-Type': 'application/json' },
+          url: `https://discord.com/api/channels/${discordChannelId}/messages`,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bot ${tokenDiscord}`,
+          },
           data: {
             content: event.message.text,
           },
         });
 
-        // telegram
-        const bot = new TelegramBot(
-          '5686867514:AAHPvyxZXozInmz4UZhg__UnPPtwo_19l5Q',
-          { polling: true }
-        );
-        await bot.sendMessage(-785187941, event.message.text);
-      } else if (event.message.type === 'image') {
-        const bucket = `${process.env.PROJECT}-${process.env.ENVR}`;
-        const contentStream: Readable = await this.client.getMessageContent(
-          event.message.id
-        );
-        const chunks = [];
-        for await (const chunk of contentStream) chunks.push(chunk);
-        const buffer = Buffer.concat(chunks);
+      // telegram
+      const bot = new TelegramBot(tokenTelegram, { polling: true });
+      for (const telegramChatId of dstTelegramChatId.split(','))
+        await bot.sendMessage(telegramChatId, event.message.text);
+    } else if (event.message.type === 'image') {
+      // save image
+      const bucket = `${process.env.PROJECT}-${process.env.ENVR}`;
+      const contentStream: Readable = await this.client.getMessageContent(
+        event.message.id
+      );
+      const chunks = [];
+      for await (const chunk of contentStream) chunks.push(chunk);
+      const buffer = Buffer.concat(chunks);
 
-        const fileType = await fileTypeFromBuffer(buffer);
-        const filename = `${event.message.id}.${fileType?.ext}`;
-        const readableStream = new Readable({
-          read() {
-            this.push(buffer);
-            this.push(null);
-          },
-        });
+      const fileType = await fileTypeFromBuffer(buffer);
+      const filename = `${event.message.id}.${fileType?.ext}`;
+      const readableStream = new Readable({
+        read() {
+          this.push(buffer);
+          this.push(null);
+        },
+      });
 
-        await this.s3
-          .upload({
-            Body: readableStream,
-            Bucket: bucket,
-            Key: filename,
-          })
-          .promise();
-
-        const url = this.s3.getSignedUrl('getObject', {
+      await this.s3
+        .upload({
+          Body: readableStream,
           Bucket: bucket,
           Key: filename,
-        });
+        })
+        .promise();
 
-        // line
-        await this.client.pushMessage('Ccca6c0d6ed49e51eb3cb6e52a04ef6ea', [
+      const url = this.s3.getSignedUrl('getObject', {
+        Bucket: bucket,
+        Key: filename,
+        Expires: 86400,
+      });
+
+      // line
+      for (const lineGroupId of dstLineGroupId.split(','))
+        await this.client.pushMessage(lineGroupId, [
           {
             type: 'image',
             originalContentUrl: url,
             previewImageUrl: url,
           },
         ]);
-        console.log(url);
-        // discord
+
+      // discord
+      for (const discordChannelId of dstDiscordChannelId.split(','))
         await axios.request({
           method: 'post',
-          url: 'https://discord.com/api/webhooks/1091170560001716314/5kU6C4_y2gmIVKA32dt6X31wb1H8CglcxG8u3ekGrC0fIu1fGkupX5E3YNsEJvC4W7AX',
-          headers: { 'Content-Type': 'application/json' },
+          url: `https://discord.com/api/channels/${discordChannelId}/messages`,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bot ${tokenDiscord}`,
+          },
           data: {
             embeds: [
               {
@@ -103,12 +126,10 @@ export class ChatService {
           },
         });
 
-        // telegram
-        const bot = new TelegramBot(
-          '5686867514:AAHPvyxZXozInmz4UZhg__UnPPtwo_19l5Q',
-          { polling: true }
-        );
-        await bot.sendPhoto(-785187941, url);
-      }
+      // telegram
+      const bot = new TelegramBot(tokenTelegram, { polling: true });
+      for (const telegramChatId of dstTelegramChatId.split(','))
+        await bot.sendPhoto(telegramChatId, url);
+    }
   }
 }

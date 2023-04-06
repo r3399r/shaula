@@ -7,10 +7,6 @@ Globals:
   Function:
       Timeout: 30  # in seconds
 Parameters: 
-  LambdaExecutionRole:
-    Type: String
-    Default: celestial-service-execution-role
-    Description: The primary role in that gives the Lambda function permission to do its work.
   NodeJsVer:
     Type: String
     Default: nodejs14.x
@@ -19,13 +15,23 @@ Parameters:
   TargetEnvr:
     Type: String
     Description: The target environment for API Gateway deployment.
-  SubDomain:
-    Type: String
-  Domain:
-    Type: String
-Conditions: 
-  IsProd: !Equals [ !Ref TargetEnvr, prod ]
 Resources:
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      RoleName: !Sub ${Project}
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
   ##############################################
   ##### API Gateway and associated Lambdas #####
   ##############################################
@@ -93,14 +99,21 @@ Resources:
       Handler: index.chat
       Runtime: !Sub ${NodeJsVer}
       FunctionName: !Sub ${Project}-${TargetEnvr}-chat
-      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaExecutionRole}"
+      Role: !GetAtt ExecutionRole.Arn
       CodeUri: ../../dist/webpack/lambda
       MemorySize: 128
       Environment:
         Variables:
           PROJECT: !Sub ${Project}
           ENVR: !Sub ${TargetEnvr}
-          CHANNEL_TOKEN: !Sub '{{resolve:ssm:${Project}-${TargetEnvr}-token:1}}'
+          TOKEN_LINE: TBD
+          TOKEN_DISCORD: TBD
+          TOKEN_TELEGRAM: TBD
+          SRC_LINE_GROUP_ID: TBD
+          SRC_LINE_USER_ID: TBD
+          DST_LINE_GROUP_ID: TBD
+          DST_DISCORD_CHANNEL_ID: TBD
+          DST_TELEGRAM_CHAT_ID: TBD
   InvokePermissionChat:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaChat]

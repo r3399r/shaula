@@ -12,13 +12,13 @@ export async function chat(
   let service: ChatService | null = null;
   try {
     BindingsHelper.bindClientConfig({
-      channelAccessToken: String(process.env.CHANNEL_TOKEN),
+      channelAccessToken: String(process.env.TOKEN_LINE),
     });
 
     service = bindings.get(ChatService);
 
-    if (event.events[0].type === 'message')
-      await service.receiveTextMessage(event.events[0]);
+    for (const ev of event.events)
+      if (ev.type === 'message') await service.receiveTextMessage(ev);
   } catch (e) {
     console.error(e);
   }
