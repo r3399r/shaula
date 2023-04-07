@@ -36,15 +36,6 @@ export class ChatService {
       return;
 
     if (event.message.type === 'text') {
-      // line
-      for (const lineGroupId of dstLineGroupId.split(','))
-        await this.client.pushMessage(lineGroupId, [
-          {
-            type: 'text',
-            text: event.message.text,
-          },
-        ]);
-
       // discord
       for (const discordChannelId of dstDiscordChannelId.split(','))
         await axios.request({
@@ -63,6 +54,15 @@ export class ChatService {
       const bot = new TelegramBot(tokenTelegram, { polling: true });
       for (const telegramChatId of dstTelegramChatId.split(','))
         await bot.sendMessage(telegramChatId, event.message.text);
+
+      // line
+      for (const lineGroupId of dstLineGroupId.split(','))
+        await this.client.pushMessage(lineGroupId, [
+          {
+            type: 'text',
+            text: event.message.text,
+          },
+        ]);
     } else if (event.message.type === 'image') {
       // save image
       const bucket = `${process.env.PROJECT}-${process.env.ENVR}`;
@@ -96,16 +96,6 @@ export class ChatService {
         Expires: 86400,
       });
 
-      // line
-      for (const lineGroupId of dstLineGroupId.split(','))
-        await this.client.pushMessage(lineGroupId, [
-          {
-            type: 'image',
-            originalContentUrl: url,
-            previewImageUrl: url,
-          },
-        ]);
-
       // discord
       for (const discordChannelId of dstDiscordChannelId.split(','))
         await axios.request({
@@ -130,6 +120,16 @@ export class ChatService {
       const bot = new TelegramBot(tokenTelegram, { polling: true });
       for (const telegramChatId of dstTelegramChatId.split(','))
         await bot.sendPhoto(telegramChatId, url);
+
+      // line
+      for (const lineGroupId of dstLineGroupId.split(','))
+        await this.client.pushMessage(lineGroupId, [
+          {
+            type: 'image',
+            originalContentUrl: url,
+            previewImageUrl: url,
+          },
+        ]);
     }
   }
 }
