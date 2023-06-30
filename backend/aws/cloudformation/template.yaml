@@ -136,3 +136,37 @@ Resources:
           ExpirationInDays: 1
           NoncurrentVersionExpiration:
             NoncurrentDays: 1
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${Project}-${TargetEnvr}-frontend
+      WebsiteConfiguration:
+        ErrorDocument: index.html
+        IndexDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: [S3Bucket]
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument: !Join
+      - ''
+      - - '{
+            "Version": "2012-10-17",
+            "Id": "PublicReadGetObject",
+            "Statement": [
+                {
+                    "Sid": "PublicReadGetObject",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": "'
+        - !GetAtt S3Bucket.Arn
+        - '/*"
+                }
+            ]
+          }'
