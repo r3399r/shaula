@@ -29,7 +29,8 @@ export class ChatService {
     const dstTelegramChatId = String(process.env.DST_TELEGRAM_CHAT_ID);
 
     if (
-      event.source.userId !== srcLineUserId ||
+      (event.source.userId &&
+        srcLineUserId.split(',').includes(event.source.userId)) ||
       event.source.type !== 'group' ||
       event.source.groupId !== srcLineGroupId
     )

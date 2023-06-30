@@ -13,7 +13,6 @@ echo project: $project
 echo ====================================================================================
 
 echo deploy backend AWS...
-cd ../
 npm i
 npm run pre:deploy
 aws cloudformation package --template-file aws/cloudformation/template.yaml --output-template-file packaged.yaml --s3-bucket line2-cf-midway
