@@ -30,7 +30,7 @@ export class ChatService {
 
     if (
       (event.source.userId &&
-        srcLineUserId.split(',').includes(event.source.userId)) ||
+        !srcLineUserId.split(',').includes(event.source.userId)) ||
       event.source.type !== 'group' ||
       event.source.groupId !== srcLineGroupId
     )
