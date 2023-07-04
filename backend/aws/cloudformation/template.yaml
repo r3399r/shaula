@@ -106,14 +106,8 @@ Resources:
         Variables:
           PROJECT: !Sub ${Project}
           ENVR: !Sub ${TargetEnvr}
+          CONFIGURATION: TBD
           TOKEN_LINE: TBD
-          TOKEN_DISCORD: TBD
-          TOKEN_TELEGRAM: TBD
-          SRC_LINE_GROUP_ID: TBD
-          SRC_LINE_USER_ID: TBD
-          DST_LINE_GROUP_ID: TBD
-          DST_DISCORD_CHANNEL_ID: TBD
-          DST_TELEGRAM_CHAT_ID: TBD
   InvokePermissionChat:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaChat]

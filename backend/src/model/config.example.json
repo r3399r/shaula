@@ -1,0 +1,21 @@
+{
+    "tokenDiscord": "token-discord",
+    "tokenTelegram": "token-telegram",
+    "srcLineGroupId": "src-line-groupId",
+    "srcLineUserIds": [
+        "src-line-user-ids-1",
+        "src-line-user-ids-2"
+    ],
+    "dstLineGroupIds": [
+        "dst-line-group-ids-1",
+        "dst-line-group-ids-2"
+    ],
+    "dstDiscordChannelIds": [
+        "dst-discord-channel-ids-1",
+        "dst-discord-channel-ids-2"
+    ],
+    "dstTelegramChatIds": [
+        "dst-telegram-chat-ids-1",
+        "dst-telegram-chat-ids-2"
+    ]
+}
