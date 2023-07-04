@@ -1,21 +1,44 @@
-{
-    "tokenDiscord": "token-discord",
-    "tokenTelegram": "token-telegram",
-    "srcLineGroupId": "src-line-groupId",
-    "srcLineUserIds": [
-        "src-line-user-ids-1",
-        "src-line-user-ids-2"
-    ],
-    "dstLineGroupIds": [
-        "dst-line-group-ids-1",
-        "dst-line-group-ids-2"
-    ],
-    "dstDiscordChannelIds": [
-        "dst-discord-channel-ids-1",
-        "dst-discord-channel-ids-2"
-    ],
-    "dstTelegramChatIds": [
-        "dst-telegram-chat-ids-1",
-        "dst-telegram-chat-ids-2"
-    ]
-}
+[
+    {
+        "tokenDiscord": "token-discord",
+        "tokenTelegram": "token-telegram",
+        "srcLineGroupId": "src-line-groupId",
+        "srcLineUserIds": [
+            "src-line-user-ids-1",
+            "src-line-user-ids-2"
+        ],
+        "dstLineGroupIds": [
+            "dst-line-group-ids-1",
+            "dst-line-group-ids-2"
+        ],
+        "dstDiscordChannelIds": [
+            "dst-discord-channel-ids-1",
+            "dst-discord-channel-ids-2"
+        ],
+        "dstTelegramChatIds": [
+            "dst-telegram-chat-ids-1",
+            "dst-telegram-chat-ids-2"
+        ]
+    },
+    {
+        "tokenDiscord": "token-discord-x",
+        "tokenTelegram": "token-telegram-x",
+        "srcLineGroupId": "src-line-groupId-x",
+        "srcLineUserIds": [
+            "src-line-user-ids-3",
+            "src-line-user-ids-4"
+        ],
+        "dstLineGroupIds": [
+            "dst-line-group-ids-3",
+            "dst-line-group-ids-4"
+        ],
+        "dstDiscordChannelIds": [
+            "dst-discord-channel-ids-3",
+            "dst-discord-channel-ids-4"
+        ],
+        "dstTelegramChatIds": [
+            "dst-telegram-chat-ids-3",
+            "dst-telegram-chat-ids-4"
+        ]
+    }
+]
