@@ -5,5 +5,8 @@ export type Config = {
   srcLineUserIds: string[];
   dstLineGroupIds: string[];
   dstDiscordChannelIds: string[];
-  dstTelegramChatIds: string[];
+  dstTelegramChats: {
+    id: number;
+    threadId: number;
+  }[];
 };

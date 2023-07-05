@@ -16,8 +16,14 @@
             "dst-discord-channel-ids-2"
         ],
         "dstTelegramChatIds": [
-            "dst-telegram-chat-ids-1",
-            "dst-telegram-chat-ids-2"
+            {
+                "id": -123456789,
+                "threadId": 9
+            },
+            {
+                "id": -982345328,
+                "threadId": 3
+            }
         ]
     },
     {
@@ -37,8 +43,14 @@
             "dst-discord-channel-ids-4"
         ],
         "dstTelegramChatIds": [
-            "dst-telegram-chat-ids-3",
-            "dst-telegram-chat-ids-4"
+            {
+                "id": -23456781,
+                "threadId": 1
+            },
+            {
+                "id": -582342328,
+                "threadId": 7
+            }
         ]
     }
 ]

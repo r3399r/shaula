@@ -29,7 +29,7 @@ export class ChatService {
         srcLineUserIds,
         dstDiscordChannelIds,
         dstLineGroupIds,
-        dstTelegramChatIds,
+        dstTelegramChats,
       } = config;
 
       if (
@@ -55,8 +55,10 @@ export class ChatService {
 
           // telegram
           const bot = new TelegramBot(tokenTelegram, { polling: true });
-          for (const telegramChatId of dstTelegramChatIds)
-            await bot.sendMessage(telegramChatId, event.message.text);
+          for (const telegramChat of dstTelegramChats)
+            await bot.sendMessage(telegramChat.id, event.message.text, {
+              message_thread_id: telegramChat.threadId,
+            });
 
           // line
           for (const lineGroupId of dstLineGroupIds)
@@ -121,8 +123,10 @@ export class ChatService {
 
           // telegram
           const bot = new TelegramBot(tokenTelegram, { polling: true });
-          for (const telegramChatId of dstTelegramChatIds)
-            await bot.sendPhoto(telegramChatId, url);
+          for (const telegramChat of dstTelegramChats)
+            await bot.sendPhoto(telegramChat.id, url, {
+              message_thread_id: telegramChat.threadId,
+            });
 
           // line
           for (const lineGroupId of dstLineGroupIds)
