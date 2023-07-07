@@ -4,7 +4,7 @@ import { ChatService } from 'src/logic/ChatService';
 import { LambdaContext } from 'src/model/Lambda';
 import { BindingsHelper } from 'src/util/BindingsHelper';
 
-export async function chat(
+export async function srcLine(
   event: WebhookRequestBody,
   _context?: LambdaContext
 ) {

@@ -1,2 +1,3 @@
 // tslint:disable: export-name
-export { chat } from 'src/lambda/chat';
+export { srcLine } from 'src/lambda/srcLine';
+export { srcTelegram } from 'src/lambda/srcTelegram';

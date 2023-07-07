@@ -7,6 +7,6 @@ export type Config = {
   dstDiscordChannelIds: string[];
   dstTelegramChats: {
     id: number;
-    threadId: number;
+    threadId?: number;
   }[];
 };
