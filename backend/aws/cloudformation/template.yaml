@@ -58,34 +58,7 @@ Resources:
                   }
                 },
                 "x-amazon-apigateway-integration": {
-                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Project}-${TargetEnvr}-srcLine/invocations",
-                  "responses": {
-                    "default": {
-                      "statusCode": "200"
-                    }
-                  },
-                  "passthroughBehavior": "when_no_match",
-                  "httpMethod": "POST",
-                  "contentHandling": "CONVERT_TO_TEXT",
-                  "type": "aws"
-                }
-              }
-            },
-            "/api/telegram": {
-              "post": {
-                "produces": [
-                  "application/json"
-                ],
-                "responses": {
-                  "200": {
-                    "description": "200 response",
-                    "schema": {
-                      "$ref": "#/definitions/Empty"
-                    }
-                  }
-                },
-                "x-amazon-apigateway-integration": {
-                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Project}-${TargetEnvr}-srcTelegram/invocations",
+                  "uri": !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Project}-${TargetEnvr}-chat/invocations",
                   "responses": {
                     "default": {
                       "statusCode": "200"
@@ -116,13 +89,13 @@ Resources:
             }
           }
         }
-  LambdaSrcLine:
+  LambdaChat:
     Type: AWS::Serverless::Function
     Properties:
       Architectures: [arm64]
-      Handler: index.srcLine
+      Handler: index.chat
       Runtime: nodejs18.x
-      FunctionName: !Sub ${Project}-${TargetEnvr}-srcLine
+      FunctionName: !Sub ${Project}-${TargetEnvr}-chat
       Role: !GetAtt ExecutionRole.Arn
       CodeUri: ../../dist/webpack/lambda
       MemorySize: 128
@@ -132,35 +105,13 @@ Resources:
           ENVR: !Sub ${TargetEnvr}
           CONFIGURATION: TBD
           TOKEN_LINE: TBD
-  InvokePermissionSrcLine:
-    Type: AWS::Lambda::Permission
-    DependsOn: [ServerlessApi, LambdaSrcLine]
-    Properties:
-      FunctionName: !Sub ${Project}-${TargetEnvr}-srcLine
-      Action: 'lambda:InvokeFunction'
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
-  LambdaSrcTelegram:
-    Type: AWS::Serverless::Function
-    Properties:
-      Architectures: [arm64]
-      Handler: index.srcTelegram
-      Runtime: nodejs18.x
-      FunctionName: !Sub ${Project}-${TargetEnvr}-srcTelegram
-      Role: !GetAtt ExecutionRole.Arn
-      CodeUri: ../../dist/webpack/lambda
-      MemorySize: 128
-      Environment:
-        Variables:
-          PROJECT: !Sub ${Project}
-          ENVR: !Sub ${TargetEnvr}
-          CONFIGURATION: TBD
+          TOKEN_DISCORD: TBD
           TOKEN_TELEGRAM: TBD
-  InvokePermissionSrcTelegram:
+  InvokePermissionChat:
     Type: AWS::Lambda::Permission
-    DependsOn: [ServerlessApi, LambdaSrcTelegram]
+    DependsOn: [ServerlessApi, LambdaChat]
     Properties:
-      FunctionName: !Sub ${Project}-${TargetEnvr}-srcTelegram
+      FunctionName: !Sub ${Project}-${TargetEnvr}-chat
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*

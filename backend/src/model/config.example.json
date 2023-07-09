@@ -1,54 +1,25 @@
 [
     {
-        "tokenDiscord": "token-discord",
-        "tokenTelegram": "token-telegram",
-        "srcLineGroupId": "src-line-groupId",
-        "srcLineUserIds": [
-            "src-line-user-ids-1",
-            "src-line-user-ids-2"
-        ],
+        "srcLine": {
+            "groupId": "Cfc64b0006f3e662f2bc13eb7acdcd932",
+            "userIds": [
+                "U4e1fe99fd5a5e6d4dff9ec8610e38271"
+            ]
+        },
+        "srcTelegramChat": {
+            "id": -1001606722146,
+            "threadId": 2
+        },
         "dstLineGroupIds": [
-            "dst-line-group-ids-1",
-            "dst-line-group-ids-2"
+            "C36bd695d5d9468f8be0fa1befcd6e62e"
         ],
         "dstDiscordChannelIds": [
-            "dst-discord-channel-ids-1",
-            "dst-discord-channel-ids-2"
+            "1091225902429503529"
         ],
         "dstTelegramChats": [
             {
-                "id": -123456789,
-                "threadId": 9
-            },
-            {
-                "id": -982345328
-            }
-        ]
-    },
-    {
-        "tokenDiscord": "token-discord-x",
-        "tokenTelegram": "token-telegram-x",
-        "srcLineGroupId": "src-line-groupId-x",
-        "srcLineUserIds": [
-            "src-line-user-ids-3",
-            "src-line-user-ids-4"
-        ],
-        "dstLineGroupIds": [
-            "dst-line-group-ids-3",
-            "dst-line-group-ids-4"
-        ],
-        "dstDiscordChannelIds": [
-            "dst-discord-channel-ids-3",
-            "dst-discord-channel-ids-4"
-        ],
-        "dstTelegramChats": [
-            {
-                "id": -23456781,
-                "threadId": 1
-            },
-            {
-                "id": -582342328,
-                "threadId": 7
+                "id": -1001606722146,
+                "threadId": 15
             }
         ]
     }
