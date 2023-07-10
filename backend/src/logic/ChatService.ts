@@ -188,6 +188,16 @@ export class ChatService {
           }
           if (dstLineGroupIds)
             await this.sendTextToLine(dstLineGroupIds, [user, text]);
+          // log
+          console.log(
+            JSON.stringify({
+              source: 'telegram',
+              type: 'text',
+              from: user,
+              message: text,
+              timestamp: Date.now(),
+            })
+          );
         } else if (fileId) {
           // get url
           const contentStream = this.telegramBot.getFileStream(fileId);
@@ -203,6 +213,16 @@ export class ChatService {
           }
           if (dstLineGroupIds)
             await this.sendImageToLine(dstLineGroupIds, url, user);
+          // log
+          console.log(
+            JSON.stringify({
+              source: 'telegram',
+              type: 'image',
+              from: user,
+              url,
+              timestamp: Date.now(),
+            })
+          );
         }
     }
   }
@@ -235,6 +255,16 @@ export class ChatService {
             await this.sendTextToTelegram(dstTelegramChats, event.message.text);
           if (dstLineGroupIds)
             await this.sendTextToLine(dstLineGroupIds, [event.message.text]);
+          // log
+          console.log(
+            JSON.stringify({
+              source: 'line',
+              type: 'text',
+              from: event.source.userId,
+              message: event.message.text,
+              timestamp: Date.now(),
+            })
+          );
         } else if (event.message.type === 'image') {
           // save image and get url
           const contentStream = await this.client.getMessageContent(
@@ -247,6 +277,16 @@ export class ChatService {
           if (dstTelegramChats)
             await this.sendImageToTelegram(dstTelegramChats, url);
           if (dstLineGroupIds) await this.sendImageToLine(dstLineGroupIds, url);
+          // log
+          console.log(
+            JSON.stringify({
+              source: 'line',
+              type: 'image',
+              from: event.source.userId,
+              url,
+              timestamp: Date.now(),
+            })
+          );
         }
     }
   }
