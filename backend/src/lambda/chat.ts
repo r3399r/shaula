@@ -9,7 +9,6 @@ export async function chat(
   event: WebhookRequestBody | Update,
   _context?: LambdaContext
 ) {
-  console.log(JSON.stringify(event));
   let service: ChatService | null = null;
   try {
     BindingsHelper.bindClientConfig({

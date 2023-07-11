@@ -156,7 +156,9 @@ export class ChatService {
   public async receiveTelegramUpdate(update: Update) {
     const configs = JSON.parse(String(process.env.CONFIGURATION)) as Config[];
 
-    const user = `${update.message?.from?.first_name} ${update.message?.from?.last_name}`;
+    const user = `${update.message?.from?.first_name ?? ''} ${
+      update.message?.from?.last_name ?? ''
+    }`;
     const chatId = update.message?.chat.id;
     const threadId = update.message?.reply_to_message?.message_thread_id;
     const text = update.message?.text;
@@ -178,22 +180,27 @@ export class ChatService {
         srcTelegramChat.threadId === threadId
       )
         if (text) {
-          if (dstDiscordChannelIds) {
-            await this.sendTextToDiscord(dstDiscordChannelIds, user);
-            await this.sendTextToDiscord(dstDiscordChannelIds, text);
-          }
-          if (dstTelegramChats) {
-            await this.sendTextToTelegram(dstTelegramChats, user);
-            await this.sendTextToTelegram(dstTelegramChats, text);
-          }
+          if (dstDiscordChannelIds)
+            await this.sendTextToDiscord(
+              dstDiscordChannelIds,
+              `${user}:\n${text}`
+            );
+
+          if (dstTelegramChats)
+            await this.sendTextToTelegram(
+              dstTelegramChats,
+              `${user}:\n${text}`
+            );
+
           if (dstLineGroupIds)
-            await this.sendTextToLine(dstLineGroupIds, [user, text]);
+            await this.sendTextToLine(dstLineGroupIds, [`${user}:\n${text}`]);
           // log
           console.log(
             JSON.stringify({
               source: 'telegram',
               type: 'text',
-              from: user,
+              fromUser: user,
+              fromGroup: `${chatId}_${threadId}`,
               message: text,
               timestamp: Date.now(),
             })
@@ -202,23 +209,24 @@ export class ChatService {
           // get url
           const contentStream = this.telegramBot.getFileStream(fileId);
           const url = await this.getUrlByStream(contentStream);
-          console.log(url);
+
           if (dstDiscordChannelIds) {
-            await this.sendTextToDiscord(dstDiscordChannelIds, user);
+            await this.sendTextToDiscord(dstDiscordChannelIds, `${user}:`);
             await this.sendImageToDiscord(dstDiscordChannelIds, url);
           }
           if (dstTelegramChats) {
-            await this.sendTextToTelegram(dstTelegramChats, user);
+            await this.sendTextToTelegram(dstTelegramChats, `${user}:`);
             await this.sendImageToTelegram(dstTelegramChats, url);
           }
           if (dstLineGroupIds)
-            await this.sendImageToLine(dstLineGroupIds, url, user);
+            await this.sendImageToLine(dstLineGroupIds, url, `${user}:`);
           // log
           console.log(
             JSON.stringify({
               source: 'telegram',
               type: 'image',
-              from: user,
+              fromUser: user,
+              fromGroup: `${chatId}_${threadId}`,
               url,
               timestamp: Date.now(),
             })
@@ -228,6 +236,7 @@ export class ChatService {
   }
 
   public async receiveLineMessage(event: MessageEvent) {
+    console.log(JSON.stringify(event));
     const configs = JSON.parse(String(process.env.CONFIGURATION)) as Config[];
 
     for (const config of configs) {
@@ -260,7 +269,8 @@ export class ChatService {
             JSON.stringify({
               source: 'line',
               type: 'text',
-              from: event.source.userId,
+              fromUser: event.source.userId,
+              fromGroup: event.source.groupId,
               message: event.message.text,
               timestamp: Date.now(),
             })
@@ -283,6 +293,7 @@ export class ChatService {
               source: 'line',
               type: 'image',
               from: event.source.userId,
+              fromGroup: event.source.groupId,
               url,
               timestamp: Date.now(),
             })
