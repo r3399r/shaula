@@ -3,6 +3,7 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ZipWebpackPlugin = require('zip-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   devtool: 'source-map',
@@ -41,6 +42,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist/webpack/lambda'),
   },
   plugins: [
+    new Dotenv(),
     new ZipWebpackPlugin({
       exclude: '..',
       filename: 'lambda',

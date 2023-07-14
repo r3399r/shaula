@@ -6,7 +6,7 @@ import { fileTypeFromBuffer } from 'file-type';
 import { inject, injectable } from 'inversify';
 import TelegramBot, { Update } from 'node-telegram-bot-api';
 import { v4 as uuidv4 } from 'uuid';
-import { Config } from 'src/model/Config';
+import { ChatConfig } from 'src/model/Config';
 
 /**
  * Service class for broadcast
@@ -154,7 +154,9 @@ export class ChatService {
   }
 
   public async receiveTelegramUpdate(update: Update) {
-    const configs = JSON.parse(String(process.env.CONFIGURATION)) as Config[];
+    const configs = JSON.parse(
+      String(process.env.CONFIGURATION)
+    ) as ChatConfig[];
 
     const user = `${update.message?.from?.first_name ?? ''} ${
       update.message?.from?.last_name ?? ''
@@ -237,7 +239,9 @@ export class ChatService {
 
   public async receiveLineMessage(event: MessageEvent) {
     console.log(JSON.stringify(event));
-    const configs = JSON.parse(String(process.env.CONFIGURATION)) as Config[];
+    const configs = JSON.parse(
+      String(process.env.CONFIGURATION)
+    ) as ChatConfig[];
 
     for (const config of configs) {
       const {

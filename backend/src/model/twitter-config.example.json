@@ -1,0 +1,15 @@
+{
+    "usernames": [
+        "phyrex_ni",
+        "whale_alert"
+    ],
+    "dstTelegramChats": [
+        {
+            "id": -1234,
+            "threadId": 2
+        },
+        {
+            "id": -1234
+        }
+    ]
+}

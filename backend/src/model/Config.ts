@@ -1,4 +1,4 @@
-export type Config = {
+export type ChatConfig = {
   srcLine?: {
     groupId: string;
     userIds: string[];
@@ -10,6 +10,14 @@ export type Config = {
   dstLineGroupIds?: string[];
   dstDiscordChannelIds?: string[];
   dstTelegramChats?: {
+    id: number;
+    threadId?: number;
+  }[];
+};
+
+export type TwitterConfig = {
+  usernames: string[];
+  dstTelegramChats: {
     id: number;
     threadId?: number;
   }[];

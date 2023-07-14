@@ -29,6 +29,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess
   ##############################################
   ##### API Gateway and associated Lambdas #####
   ##############################################
@@ -115,6 +116,54 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
+  LambdaBinance:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures: [arm64]
+      Handler: index.binance
+      Runtime: nodejs18.x
+      FunctionName: !Sub ${Project}-${TargetEnvr}-binance
+      Role: !GetAtt ExecutionRole.Arn
+      CodeUri: ../../dist/webpack/lambda
+      MemorySize: 128
+      Environment:
+        Variables:
+          PROJECT: !Sub ${Project}
+          BTCUSDT_UPPER_LIMIT: TBD
+          BTCUSDT_LOWER_LIMIT: TBD
+          ETHUSDT_UPPER_LIMIT: TBD
+          ETHUSDT_LOWER_LIMIT: TBD
+  InvokePermissionBinance:
+    Type: AWS::Lambda::Permission
+    DependsOn: [EventBridge, LambdaBinance]
+    Properties:
+      FunctionName: !Sub ${Project}-${TargetEnvr}-binance
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventBridge.Arn
+  LambdaTwitter:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures: [arm64]
+      Handler: index.twitter
+      Runtime: nodejs18.x
+      FunctionName: !Sub ${Project}-${TargetEnvr}-twitter
+      Role: !GetAtt ExecutionRole.Arn
+      CodeUri: ../../dist/webpack/lambda
+      MemorySize: 128
+      Environment:
+        Variables:
+          PROJECT: !Sub ${Project}
+          TOKEN_TELEGRAM: TBD
+          CONFIGURATION: TBD
+  InvokePermissionTwitter:
+    Type: AWS::Lambda::Permission
+    DependsOn: [EventBridge, LambdaTwitter]
+    Properties:
+      FunctionName: !Sub ${Project}-${TargetEnvr}-twitter
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventBridge.Arn
   ####################################
   ##### S3 Bucket and its policy #####
   ####################################
@@ -163,3 +212,26 @@ Resources:
                 }
             ]
           }'
+  #######################
+  ##### EventBridge #####
+  #######################
+  EventBridgeBinance:
+    Type: AWS::Events::Rule
+    DependsOn: [LambdaBinance]
+    Properties:
+      Name: !Sub ${Project}-${TargetEnvr}-binance
+      ScheduleExpression: cron(*/5 * * * ? *)
+      State: ENABLED
+      Targets: 
+        - Arn: !GetAtt LambdaBinance.Arn
+          Id: !Sub ${Project}-${TargetEnvr}-binance
+  EventBridgeTwitter:
+    Type: AWS::Events::Rule
+    DependsOn: [LambdaBinance]
+    Properties:
+      Name: !Sub ${Project}-${TargetEnvr}-twitter
+      ScheduleExpression: cron(*/5 * * * ? *)
+      State: ENABLED
+      Targets: 
+        - Arn: !GetAtt LambdaBinance.Arn
+          Id: !Sub ${Project}-${TargetEnvr}-twitter
