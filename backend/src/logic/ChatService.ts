@@ -250,7 +250,7 @@ export class ChatService {
       );
       const tweets = res2.data;
 
-      if (!tweets.data) return;
+      if (!tweets.data) continue;
       for (const tweet of tweets.data) {
         const content: Message[] = [
           {
