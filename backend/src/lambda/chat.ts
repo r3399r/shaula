@@ -2,11 +2,11 @@ import { WebhookRequestBody } from '@line/bot-sdk';
 import { Update } from 'node-telegram-bot-api';
 import { bindings } from 'src/bindings';
 import { ChatService } from 'src/logic/ChatService';
-import { LambdaContext } from 'src/model/Lambda';
+import { EventBridgeEvent, LambdaContext } from 'src/model/Aws';
 import { BindingsHelper } from 'src/util/BindingsHelper';
 
 export async function chat(
-  event: WebhookRequestBody | Update,
+  event: WebhookRequestBody | Update | EventBridgeEvent,
   _context?: LambdaContext
 ) {
   let service: ChatService | null = null;
@@ -18,7 +18,8 @@ export async function chat(
 
     service = bindings.get(ChatService);
 
-    if ('update_id' in event) await service.receiveTelegramUpdate(event);
+    if ('detail-type' in event) await service.receiveEventBridgeEvent();
+    else if ('update_id' in event) await service.receiveTelegramUpdate(event);
     else
       for (const ev of event.events)
         if (ev.type === 'message') await service.receiveLineMessage(ev);

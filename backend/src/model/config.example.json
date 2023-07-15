@@ -10,6 +10,20 @@
             "id": -1001606722146,
             "threadId": 2
         },
+        "srcTwitterUsernames": [
+            "phyrex_ni",
+            "whale_alert"
+        ],
+        "fundingRateLimit": {
+            "BTCUSDT": [
+                0,
+                1
+            ],
+            "ETHUSDT": [
+                0,
+                1
+            ]
+        },
         "dstLineGroupIds": [
             "C36bd695d5d9468f8be0fa1befcd6e62e"
         ],

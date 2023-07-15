@@ -35,34 +35,14 @@ export type LambdaEvent = {
     };
   };
 };
-
-export type CognitoEvent = {
+export type EventBridgeEvent = {
   version: string;
+  id: string;
+  'detail-type': string;
+  source: string;
+  account: string;
+  time: string;
   region: string;
-  userPoolId: string;
-  userName: string;
-  callerContext: {
-    awsSdkVersion: string;
-    clientId: string;
-  };
-  triggerSource: string;
-  request: {
-    userAttributes: {
-      sub: string;
-      email_verified: string;
-      'cognito:user_status': string;
-      'cognito:email_alias': string;
-      email: string;
-    };
-  };
-  response: unknown;
-};
-
-export type CustomLambdaEvent = {
-  image: string;
-  userId: string;
-  codeformerFidelity: number;
-  backgroundEnhance: boolean;
-  faceUpsample: boolean;
-  upscale: number;
+  resources: string[];
+  detail: {};
 };

@@ -104,7 +104,7 @@ Resources:
         Variables:
           PROJECT: !Sub ${Project}
           ENVR: !Sub ${TargetEnvr}
-          CONFIGURATION: TBD
+          CONFIGURATION: "[]"
           TOKEN_LINE: TBD
           TOKEN_DISCORD: TBD
           TOKEN_TELEGRAM: TBD
@@ -116,51 +116,11 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
-  LambdaBinance:
-    Type: AWS::Serverless::Function
-    Properties:
-      Architectures: [arm64]
-      Handler: index.binance
-      Runtime: nodejs18.x
-      FunctionName: !Sub ${Project}-${TargetEnvr}-binance
-      Role: !GetAtt ExecutionRole.Arn
-      CodeUri: ../../dist/webpack/lambda
-      MemorySize: 128
-      Environment:
-        Variables:
-          PROJECT: !Sub ${Project}
-          BTCUSDT_UPPER_LIMIT: TBD
-          BTCUSDT_LOWER_LIMIT: TBD
-          ETHUSDT_UPPER_LIMIT: TBD
-          ETHUSDT_LOWER_LIMIT: TBD
-  InvokePermissionBinance:
+  InvokePermissionEventBridge:
     Type: AWS::Lambda::Permission
-    DependsOn: [EventBridge, LambdaBinance]
+    DependsOn: [EventBridge, LambdaChat]
     Properties:
-      FunctionName: !Sub ${Project}-${TargetEnvr}-binance
-      Action: 'lambda:InvokeFunction'
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt EventBridge.Arn
-  LambdaTwitter:
-    Type: AWS::Serverless::Function
-    Properties:
-      Architectures: [arm64]
-      Handler: index.twitter
-      Runtime: nodejs18.x
-      FunctionName: !Sub ${Project}-${TargetEnvr}-twitter
-      Role: !GetAtt ExecutionRole.Arn
-      CodeUri: ../../dist/webpack/lambda
-      MemorySize: 128
-      Environment:
-        Variables:
-          PROJECT: !Sub ${Project}
-          TOKEN_TELEGRAM: TBD
-          CONFIGURATION: TBD
-  InvokePermissionTwitter:
-    Type: AWS::Lambda::Permission
-    DependsOn: [EventBridge, LambdaTwitter]
-    Properties:
-      FunctionName: !Sub ${Project}-${TargetEnvr}-twitter
+      FunctionName: !Sub ${Project}-${TargetEnvr}-chat
       Action: 'lambda:InvokeFunction'
       Principal: events.amazonaws.com
       SourceArn: !GetAtt EventBridge.Arn
@@ -215,23 +175,13 @@ Resources:
   #######################
   ##### EventBridge #####
   #######################
-  EventBridgeBinance:
+  EventBridge:
     Type: AWS::Events::Rule
-    DependsOn: [LambdaBinance]
+    DependsOn: [LambdaChat]
     Properties:
-      Name: !Sub ${Project}-${TargetEnvr}-binance
+      Name: !Sub ${Project}-${TargetEnvr}
       ScheduleExpression: cron(*/5 * * * ? *)
       State: ENABLED
       Targets: 
-        - Arn: !GetAtt LambdaBinance.Arn
-          Id: !Sub ${Project}-${TargetEnvr}-binance
-  EventBridgeTwitter:
-    Type: AWS::Events::Rule
-    DependsOn: [LambdaBinance]
-    Properties:
-      Name: !Sub ${Project}-${TargetEnvr}-twitter
-      ScheduleExpression: cron(*/5 * * * ? *)
-      State: ENABLED
-      Targets: 
-        - Arn: !GetAtt LambdaBinance.Arn
-          Id: !Sub ${Project}-${TargetEnvr}-twitter
+        - Arn: !GetAtt LambdaChat.Arn
+          Id: !Sub ${Project}-${TargetEnvr}
