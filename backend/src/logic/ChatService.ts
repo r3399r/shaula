@@ -181,7 +181,7 @@ export class ChatService {
         [
           {
             type: 'text',
-            content: `BTCUSDT 資金費率超過上限: ${fundingRateLimit.BTCUSDT[1]}\nhttp://shaula-dev-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
+            content: `BTCUSDT 資金費率超過上限: ${fundingRateLimit.BTCUSDT[1]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
           },
         ],
         dst
@@ -191,7 +191,7 @@ export class ChatService {
         [
           {
             type: 'text',
-            content: `BTCUSDT 資金費率低於下限: ${fundingRateLimit.BTCUSDT[0]}\nhttp://shaula-dev-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
+            content: `BTCUSDT 資金費率低於下限: ${fundingRateLimit.BTCUSDT[0]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
           },
         ],
         dst
@@ -203,7 +203,7 @@ export class ChatService {
         [
           {
             type: 'text',
-            content: `ETHUSDT 資金費率超過上限: ${fundingRateLimit.ETHUSDT[1]}\nhttp://shaula-dev-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
+            content: `ETHUSDT 資金費率超過上限: ${fundingRateLimit.ETHUSDT[1]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
           },
         ],
         dst
@@ -213,7 +213,7 @@ export class ChatService {
         [
           {
             type: 'text',
-            content: `ETHUSDT 資金費率低於下限: ${fundingRateLimit.ETHUSDT[0]}\nhttp://shaula-dev-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
+            content: `ETHUSDT 資金費率低於下限: ${fundingRateLimit.ETHUSDT[0]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
           },
         ],
         dst

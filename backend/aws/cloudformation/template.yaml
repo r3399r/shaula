@@ -180,7 +180,7 @@ Resources:
     DependsOn: [LambdaChat]
     Properties:
       Name: !Sub ${Project}-${TargetEnvr}
-      ScheduleExpression: cron(*/5 * * * ? *)
+      ScheduleExpression: cron(*/15 * * * ? *)
       State: ENABLED
       Targets: 
         - Arn: !GetAtt LambdaChat.Arn
