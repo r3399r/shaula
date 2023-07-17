@@ -3,7 +3,7 @@ set -e
 
 env=$1
 project=shaula
-s3bucket=y-cf-midway-singapore # line2-cf-midway
+s3bucket=line2-cf-midway # y-cf-midway-singapore
 
 echo ====================================================================================
 echo env: $env

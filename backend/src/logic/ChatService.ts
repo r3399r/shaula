@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import { Client, MessageEvent } from '@line/bot-sdk';
 import { S3 } from 'aws-sdk';
 import axios from 'axios';
-import { addMinutes } from 'date-fns';
+import { addHours } from 'date-fns';
 import { fileTypeFromBuffer } from 'file-type';
 import { inject, injectable } from 'inversify';
 import TelegramBot, { Update } from 'node-telegram-bot-api';
@@ -167,6 +167,8 @@ export class ChatService {
         'https://fapi.binance.com/fapi/v1/premiumIndex?symbol=ETHUSDT'
       ),
     ]);
+    const btcusdtFundingRate = res1.data.lastFundingRate;
+    const ethusdtFundingRate = res2.data.lastFundingRate;
 
     const dst = {
       discordChannelIds: dstDiscordChannelIds,
@@ -174,50 +176,33 @@ export class ChatService {
       lineGropuIds: dstLineGroupIds,
     };
 
-    if (
-      bn(res1.data.lastFundingRate).isGreaterThan(fundingRateLimit.BTCUSDT[1])
-    )
-      await this.send(
-        [
-          {
-            type: 'text',
-            content: `BTCUSDT 資金費率超過上限: ${fundingRateLimit.BTCUSDT[1]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
-          },
-        ],
-        dst
-      );
-    if (bn(res1.data.lastFundingRate).isLessThan(fundingRateLimit.BTCUSDT[0]))
-      await this.send(
-        [
-          {
-            type: 'text',
-            content: `BTCUSDT 資金費率低於下限: ${fundingRateLimit.BTCUSDT[0]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
-          },
-        ],
-        dst
-      );
-    if (
-      bn(res2.data.lastFundingRate).isGreaterThan(fundingRateLimit.ETHUSDT[1])
-    )
-      await this.send(
-        [
-          {
-            type: 'text',
-            content: `ETHUSDT 資金費率超過上限: ${fundingRateLimit.ETHUSDT[1]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
-          },
-        ],
-        dst
-      );
-    if (bn(res2.data.lastFundingRate).isLessThan(fundingRateLimit.ETHUSDT[0]))
-      await this.send(
-        [
-          {
-            type: 'text',
-            content: `ETHUSDT 資金費率低於下限: ${fundingRateLimit.ETHUSDT[0]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`,
-          },
-        ],
-        dst
-      );
+    let message = '';
+    if (bn(btcusdtFundingRate).isGreaterThan(fundingRateLimit.BTCUSDT[1]))
+      message = `BTCUSDT 資金費率超過上限: ${fundingRateLimit.BTCUSDT[1]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`;
+    if (bn(btcusdtFundingRate).isLessThan(fundingRateLimit.BTCUSDT[0]))
+      message = `BTCUSDT 資金費率低於下限: ${fundingRateLimit.BTCUSDT[0]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`;
+    if (bn(ethusdtFundingRate).isGreaterThan(fundingRateLimit.ETHUSDT[1]))
+      message = `ETHUSDT 資金費率超過上限: ${fundingRateLimit.ETHUSDT[1]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`;
+    if (bn(ethusdtFundingRate).isLessThan(fundingRateLimit.ETHUSDT[0]))
+      message = `ETHUSDT 資金費率低於下限: ${fundingRateLimit.ETHUSDT[0]}\nhttp://shaula-${process.env.ENVR}-frontend.s3-website-ap-southeast-1.amazonaws.com/`;
+
+    await this.send(
+      [
+        {
+          type: 'text',
+          content: message,
+        },
+      ],
+      dst
+    );
+    // log
+    console.log(
+      JSON.stringify({
+        source: 'binance',
+        message,
+        timestamp: Date.now(),
+      })
+    );
   }
 
   private async runTwitterCron(config: Config) {
@@ -242,7 +227,7 @@ export class ChatService {
         {
           headers: { Authorization: `Bearer ${process.env.TOKEN}` },
           params: {
-            start_time: addMinutes(new Date(), -5).toISOString(),
+            start_time: addHours(new Date(), -1).toISOString(),
             exclude: 'retweets,replies',
             expansions: 'attachments.media_keys',
           },

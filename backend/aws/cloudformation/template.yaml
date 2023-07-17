@@ -23,6 +23,7 @@ Resources:
             Principal:
               Service:
                 - lambda.amazonaws.com
+                - events.amazonaws.com
             Action:
               - sts:AssumeRole
       RoleName: !Sub ${Project}
@@ -180,7 +181,8 @@ Resources:
     DependsOn: [LambdaChat]
     Properties:
       Name: !Sub ${Project}-${TargetEnvr}
-      ScheduleExpression: cron(*/15 * * * ? *)
+      RoleArn: !GetAtt ExecutionRole.Arn
+      ScheduleExpression: cron(0 * * * ? *)
       State: ENABLED
       Targets: 
         - Arn: !GetAtt LambdaChat.Arn
