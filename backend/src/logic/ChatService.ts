@@ -343,7 +343,14 @@ export class ChatService {
           const contentStream = this.telegramBot.getFileStream(fileId);
           const url = await this.getUrlByStream(contentStream);
 
-          await this.send([{ type: 'image', content: url }], {
+          const message: Message[] = [{ type: 'image', content: url }];
+          if (update.message?.caption)
+            message.push({
+              type: 'text',
+              content: `${user}:\n${update.message.caption}`,
+            });
+
+          await this.send(message, {
             discordChannelIds: dstDiscordChannelIds,
             telegramChats: dstTelegramChats,
             lineGropuIds: dstLineGroupIds,
@@ -356,6 +363,7 @@ export class ChatService {
               fromUser: user,
               fromGroup: `${chatId}_${threadId}`,
               url,
+              message: update.message?.caption,
               timestamp: Date.now(),
             })
           );
